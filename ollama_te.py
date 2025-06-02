@@ -10,7 +10,6 @@
 # for chunk in stream:
 #   print(chunk['message']['content'], end='', flush=True)
 
-
 # # ollama.py
 # import asyncio
 # from ollama import AsyncClient
