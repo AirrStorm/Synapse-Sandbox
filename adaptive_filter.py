@@ -22,7 +22,6 @@ class NLMSFilter:
         return output.astype(np.float32)
 
 
-
 def int16_to_np(data):
     return np.frombuffer(data, dtype=np.int16)
 
