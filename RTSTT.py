@@ -10,7 +10,6 @@
 #     if status:
 #         print(status)
 #     q.put(indata.copy())
-
 # def main():
 #     sample_rate = 16000
 #     device_id = 12  
