@@ -27,3 +27,4 @@ def int16_to_np(data):
 
 def np_to_int16(data):
     return data.astype(np.int16).tobytes()
+
