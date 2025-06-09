@@ -13,7 +13,6 @@ if __name__ == "__main__":
         piper_path="D:/Downloads/piper_windows_amd64/piper/piper.exe",
         voice=voice,
     )
-
     stream = TextToAudioStream(engine)
     stream.feed(dummy_generator())
     stream.play()
