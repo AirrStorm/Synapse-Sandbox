@@ -10,7 +10,6 @@ CHANNELS = 1
 RATE = 16000
 FILTER_LEN = 512
 # ============================
-
 class NLMSFilter:
     def __init__(self, filter_len=512, mu=0.01, epsilon=1e-8):
         self.filter_len = filter_len
