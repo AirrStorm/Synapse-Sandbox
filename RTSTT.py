@@ -38,48 +38,7 @@
 # if __name__ == "__main__":
 #     main()
 
-# # Asyncex version
-# import sounddevice as sd
-# import numpy as np
-# import queue
-# from faster_whisper import WhisperModel
-
-# q = queue.Queue()
-
-# def audio_callback(indata, frames, time, status):
-#     if status:
-#         print(status)
-#     q.put(indata.copy())
-
-# async def transcribe_stream():
-#     sample_rate = 16000
-#     device_id = 12
-#     model = WhisperModel("distil-large-v3", device="cuda")
-
-#     buffer = np.zeros(0, dtype=np.float32)
-#     chunk_duration = 5
-#     chunk_samples = chunk_duration * sample_rate
-
-#     with sd.InputStream(samplerate=sample_rate, device=device_id, channels=1, dtype='float32', callback=audio_callback):
-#         print(f"Listening from device {device_id}...")
-
-#         while True:
-#             data = q.get()
-#             buffer = np.concatenate((buffer, data.flatten()))
-#             if len(buffer) >= chunk_samples:
-#                 segments, _ = model.transcribe(buffer[:chunk_samples], beam_size=5)
-
-#                 for segment in segments:
-#                     text = segment.text.strip()
-#                     if text:
-#                         yield text
-
-#                 buffer = buffer[chunk_samples:]
-# stt_module.py
-
-
-
-# import torch
+#import torch
 # import sounddevice as sd
 # import numpy as np
 # import queue
@@ -211,90 +170,6 @@
 #                     yield text
 #                     voiced_frames.clear()
 #                     silence_blocks = 0
-
-
-# import sounddevice as sd
-# import numpy as np
-# import queue
-# import time
-# from faster_whisper import WhisperModel
-# from ollama_te import send_to_ollama  # <-- Import from the other file
-
-# q = queue.Queue()
-
-# def audio_callback(indata, frames, time_info, status):
-#     if status:
-#         print(status)
-
-#     # Calculate RMS (volume level)
-#     volume_norm = np.linalg.norm(indata) / np.sqrt(len(indata))
-#     volume_db = 20 * np.log10(volume_norm + 1e-6)  # dB scale
-
-#     VOLUME_THRESHOLD_DB = -30  # Adjust: -30 means you need to speak loudly, -20 is more sensitive
-
-#     if volume_db > VOLUME_THRESHOLD_DB:
-#         q.put(indata.copy())
-
-# import time
-
-# last_voice_time = time.time()
-# buffer = np.zeros(0, dtype=np.float32)
-
-# SILENCE_TIMEOUT = 1.0  # seconds
-# VOLUME_THRESHOLD_DB = -30  # dB
-
-# def is_loud_enough(data):
-#     volume_norm = np.linalg.norm(data) / np.sqrt(len(data))
-#     volume_db = 20 * np.log10(volume_norm + 1e-6)
-#     return volume_db > VOLUME_THRESHOLD_DB
-
-
-# def main():
-#     sample_rate = 16000
-#     device_id = 12
-#     chunk_duration = 1 
-#     chunk_samples = chunk_duration * sample_rate
-#     silence_timeout = 1  
-
-#     model = WhisperModel("distil-large-v3", device="cuda")
-
-#     print(f"Using input device {device_id}... Press Ctrl+C to stop.")
-
-#     buffer = np.zeros(0, dtype=np.float32)
-#     full_transcript = ""  # Store all recognized text
-#     last_audio_time = time.time()
-
-#     with sd.InputStream(samplerate=sample_rate, device=device_id, channels=1,
-#                         dtype='float32', callback=audio_callback):
-#         while True:
-#             try:
-#                 data = q.get(timeout=0.1)  # timeout avoids blocking forever
-#                 if is_loud_enough(data):
-#                     buffer = np.concatenate((buffer, data.flatten()))
-#                     last_voice_time = time.time()
-#                 elif time.time() - last_voice_time > SILENCE_TIMEOUT and len(buffer) > 0:
-#                     segments, _ = model.transcribe(buffer, beam_size=5)
-#                     for segment in segments:
-#                         print(segment.text)
-#                     send_to_ollama(" ".join([segment.text for segment in segments]))
-#                     buffer = np.zeros(0, dtype=np.float32)
-
-
-#             except queue.Empty:
-#                 if buffer.size > 0 and len(buffer) >= chunk_samples:
-#                     segments, _ = model.transcribe(buffer, beam_size=5)
-#                     for segment in segments:
-#                         print(segment.text)
-#                         full_transcript += segment.text + " "
-#                     buffer = np.zeros(0, dtype=np.float32)
-
-#                 if time.time() - last_audio_time > silence_timeout and full_transcript.strip() != "":
-#                     send_to_ollama(full_transcript)
-#                     full_transcript = ""
-
-# if __name__ == "__main__":
-#     main()
-
 # #WORKING VERSION
 
 import sounddevice as sd
@@ -310,6 +185,7 @@ from threading import Event
 q = queue.Queue()
 VOLUME_THRESHOLD_DB = -30  # dB
 SILENCE_TIMEOUT = 1  # seconds
+device_id= 12
 
 def audio_callback(indata, frames, time_info, status):
     if status:
@@ -327,9 +203,7 @@ def is_loud_enough(data):
     return volume_db > VOLUME_THRESHOLD_DB
 
 
-
-
-def start_transcription(callback, device_id=12, sample_rate=16000):
+def start_transcription(callback, device_id, sample_rate=16000):
     model = WhisperModel("distil-large-v3", device="cuda")
 
     chunk_duration = 1  # seconds
@@ -366,86 +240,3 @@ def start_transcription(callback, device_id=12, sample_rate=16000):
                     buffer = np.zeros(0, dtype=np.float32)
 
 
-# # RTSTT.py
-
-# import sounddevice as sd
-# import numpy as np
-# import queue
-# import time
-# from faster_whisper import WhisperModel
-
-# from RTTTS import tts_done
-
-# q = queue.Queue()
-# VOLUME_THRESHOLD_DB = -30
-# SILENCE_TIMEOUT = 1
-
-# def audio_callback(indata, frames, time_info, status):
-#     if status:
-#         print(f"[RTSTT Status] {status}")
-
-#     if not tts_done.is_set():
-
-#         return
-
-
-#     volume_norm = np.linalg.norm(indata) / np.sqrt(len(indata))
-#     volume_db = 20 * np.log10(volume_norm + 1e-6)
-
-#     if volume_db > VOLUME_THRESHOLD_DB:
-#         q.put(indata.copy())
-
-# def is_loud_enough(data): 
-#     volume_norm = np.linalg.norm(data) / np.sqrt(len(data))
-#     volume_db = 20 * np.log10(volume_norm + 1e-6)
-#     return volume_db > VOLUME_THRESHOLD_DB
-
-# def start_transcription(callback, device_id=12, sample_rate=16000):
-
-#     model = WhisperModel("distil-large-v3", device="cuda") 
-
-#     chunk_duration = 1  
-#     chunk_samples = chunk_duration * sample_rate
-
-#     buffer = np.zeros(0, dtype=np.float32)
-#     last_voice_time = time.time() 
-
-#     print(f"[RTSTT] Using input device {device_id}... Press Ctrl+C to stop.")
-
-#     with sd.InputStream(samplerate=sample_rate, device=device_id, channels=1,
-#                         dtype='float32', callback=audio_callback):
-#         print("[RTSTT] Listening...")
-#         while True:
-#             try:
-#                 data = q.get(timeout=0.1) 
-                
-                
-#                 buffer = np.concatenate((buffer, data.flatten()))
-#                 last_voice_time = time.time() 
-
-#             except queue.Empty:
-
-                
-
-#                 if len(buffer) > 0 and (time.time() - last_voice_time > SILENCE_TIMEOUT):
-
-#                     segments, _ = model.transcribe(buffer, beam_size=5)
-#                     transcript = " ".join([segment.text for segment in segments]).strip()
-#                     if transcript: 
-
-#                         callback(transcript)
-#                     buffer = np.zeros(0, dtype=np.float32) 
-
-#                     last_voice_time = time.time() 
-
-
-#                 elif buffer.size > 0 and len(buffer) >= chunk_samples: 
-
-#                     segments, _ = model.transcribe(buffer, beam_size=5)
-#                     transcript = " ".join([segment.text for segment in segments]).strip()
-#                     if transcript:
-
-#                         callback(transcript)
-#                     buffer = np.zeros(0, dtype=np.float32) 
-#                     last_voice_time = time.time()
-#                 continue
