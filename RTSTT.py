@@ -186,6 +186,7 @@ q = queue.Queue()
 VOLUME_THRESHOLD_DB = -30  # dB
 SILENCE_TIMEOUT = 1  # seconds
 device_id= 12
+sample_rate = 16000
 
 def audio_callback(indata, frames, time_info, status):
     if status:
@@ -203,7 +204,7 @@ def is_loud_enough(data):
     return volume_db > VOLUME_THRESHOLD_DB
 
 
-def start_transcription(callback, device_id, sample_rate=16000):
+def start_transcription(callback, device_id, sample_rate):
     model = WhisperModel("distil-large-v3", device="cuda")
 
     chunk_duration = 1  # seconds
