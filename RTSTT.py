@@ -204,7 +204,7 @@ def is_loud_enough(data):
     return volume_db > VOLUME_THRESHOLD_DB
 
 
-def start_transcription(callback, device_id, sample_rate):
+def start_transcription(callback, device_id = device_id, sample_rate=sample_rate):
     model = WhisperModel("distil-large-v3", device="cuda")
 
     chunk_duration = 1  # seconds
