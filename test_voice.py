@@ -39,6 +39,5 @@ def speak(text: str):
 
 # Test
 speak("You're navigating these test chambers faster than I can build them")
-# RTTTS.py
 
 
