@@ -13,7 +13,7 @@ voice = PiperVoice.load(
     model_path="voices/glados_piper_medium.onnx",
     config_path="voices/glados_piper_medium.onnx.json"
 )
-sd.default.device = (12, 12) 
+# sd.default.device = (12, 12) 
 speech_queue = queue.Queue()
 tts_done = threading.Event()
 
