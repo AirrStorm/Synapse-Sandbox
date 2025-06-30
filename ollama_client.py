@@ -1,8 +1,7 @@
 from ollama import chat
 from RTTTS import stream_speech, say_chunk, finish_speech
-from RTSTT import start_transcription, mic_paused_event
+from RTSTT import mic_paused_event
 import time
-import threading
 
 def send_to_ollama(transcript: str) -> None:
     if not transcript.strip():
