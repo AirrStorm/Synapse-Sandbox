@@ -1,3 +1,4 @@
+from numba import none
 import sounddevice as sd
 import numpy as np
 import queue
