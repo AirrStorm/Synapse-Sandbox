@@ -43,7 +43,7 @@ def tts_worker():
         if text is None:
             break
         _speak(text)
-    tts_done.set()  # Let main thread know we're done
+    tts_done.set()  
 
 def stream_speech():
     """Starts TTS queue processing"""

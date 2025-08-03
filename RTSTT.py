@@ -12,7 +12,6 @@ SILENCE_TIMEOUT = 1  # seconds
 device_id = 12
 sample_rate = 16000
 
-# Global event to pause/unpause microphone
 mic_paused_event = Event()
 
 def audio_callback(indata, frames, time_info, status):
