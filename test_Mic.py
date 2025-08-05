@@ -9,8 +9,8 @@
 
 import sounddevice as sd
 
-device_id = 12
-test_rates = [8000, 11025, 16000, 22050, 32000, 44100, 48000]
+device_id = None
+test_rates = [8000, 11025, 16000, 22050, 32000, 44100, 48000, 96000]
 
 print(f"Testing sample rates for device {device_id}...\n")
 for rate in test_rates:
