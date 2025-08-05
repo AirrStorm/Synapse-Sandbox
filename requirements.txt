@@ -1,10 +1,7 @@
 sounddevice
-numpy<2
+numpy
 faster-whisper
 resampy
 soundfile
 piper-tts
 ollama
-pvporcupine
-pyaudio
-structlog
