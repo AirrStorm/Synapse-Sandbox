@@ -1,6 +1,7 @@
 from RTSTT import start_transcription, mic_paused_event
 from ollama_client import send_to_ollama
-from wakey import wait_for_wake_word  # <-- we'll create this
+from wakey import wait_for_wake_word
+from test_voice import speak
 
 if __name__ == "__main__":
     print("🎙️ Waiting for 'Hey MIO' to start listening...")
@@ -14,6 +15,7 @@ if __name__ == "__main__":
         print("✅ Wake word detected — activating speech recognition...")
 
         try:
+            speak("What do you want")
             mic_paused_event.clear()  # Ensure mic is unpaused
             start_transcription(send_to_ollama)
 
