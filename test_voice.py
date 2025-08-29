@@ -1,15 +1,11 @@
-import io
-import wave
+import tempfile
 import resampy
 import soundfile as sf
 import sounddevice as sd
 from piper import PiperVoice
+import wave
 
-# Load your voice model
-voice = PiperVoice.load(
-    model_path="voices/glados_piper_medium.onnx",
-    config_path="voices/glados_piper_medium.onnx.json"
-)
+voice = PiperVoice.load("voices/glados_piper_medium.onnx")
 
 def speak(text: str):
     if not text.strip():
@@ -17,27 +13,31 @@ def speak(text: str):
 
     print(f"\n{text}")
 
-    buffer = io.BytesIO()
+    # Create a temporary WAV file
+    with tempfile.NamedTemporaryFile(suffix=".wav") as tmp_wav:
+        with wave.open(tmp_wav.name, 'wb') as wav_file:
+            wav_file.setnchannels(1)
+            wav_file.setsampwidth(2)
+            wav_file.setframerate(voice.config.sample_rate)
+            voice.synthesize_wav(text, wav_file)
 
-    with wave.open(buffer, 'wb') as wav_file:
-        wav_file.setnchannels(1)
-        wav_file.setsampwidth(2)
-        wav_file.setframerate(voice.config.sample_rate)
-        voice.synthesize(text, wav_file)
+        # Read WAV
+        data, samplerate = sf.read(tmp_wav.name, dtype='float32')
 
-    buffer.seek(0)
-    data, samplerate = sf.read(buffer, dtype='float32')
+    if len(data) == 0:
+        print("Error: PiperVoice produced no audio")
+        return
 
-    # Resample to 48000 Hz (your device's default)
+    # Resample if needed
     target_samplerate = 48000
     if samplerate != target_samplerate:
         data = resampy.resample(data, samplerate, target_samplerate)
         samplerate = target_samplerate
 
+    # Play audio
     sd.play(data, samplerate)
     sd.wait()
 
-# Test
-speak("You're navigating these test chambers faster than I can build them")
-
+# # Test
+# speak("You're navigating the test chambers faster than I can build them")
 
