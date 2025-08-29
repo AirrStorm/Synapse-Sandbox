@@ -39,5 +39,5 @@ def speak(text: str):
     sd.wait()
 
 # # Test
-# speak("You're navigating the test chambers faster than I can build them")
+speak("You're navigating the test chambers faster than I can build them")
 
