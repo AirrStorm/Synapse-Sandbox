@@ -9,7 +9,7 @@ from threading import Event
 q = queue.Queue()
 VOLUME_THRESHOLD_DB = -30  # dB
 SILENCE_TIMEOUT = 1  # seconds
-device_id = 12
+device_id = 9
 sample_rate = 16000
 
 mic_paused_event = Event()
